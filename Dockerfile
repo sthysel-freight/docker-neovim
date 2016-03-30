@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-transport-https \
   build-essential \
   git \
+  curl \
   neovim \
   python-dev \
   python-pip \
@@ -29,5 +30,15 @@ RUN update-alternatives --install /usr/bin/vi vi /usr/bin/nvim 60 && \
     update-alternatives --install /usr/bin/editor editor /usr/bin/nvim 60 
 
 RUN pip3 install neovim
+
+ENV HOME /work
+WORKDIR ${HOME}
+ENV CONFIG_DIR ${HOME}/.config/nvim 
+RUN mkdir -p ${CONFIG_DIR}/autoload/
+ADD init.vim ${CONFIG_DIR}/
+
+RUN curl -o ${CONFIG_DIR}/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+RUN nvim -c "PlugInstall!"
+
 
 CMD vim
